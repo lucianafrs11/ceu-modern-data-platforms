@@ -59,27 +59,67 @@ models:
 
 ## Data Exploration
 
-Solutions:
+Execute these queries in Snowflake:
+
+### Exercise 6: Explore the Data
+
+1. Take a look at the AIRBNB database / schemas / tables (you can use the Snowflake UI for this)
+2. Select 10 records from listings - review and understand the data
+3. Select 10 records from hosts - review and understand the data
+4. Select 10 records from reviews - review and understand the data
+
+<details>
+<summary>Solution</summary>
+
 ```sql
 USE AIRBNB.RAW;
 
 SELECT * FROM RAW_LISTINGS LIMIT 10;
 SELECT * FROM RAW_HOSTS LIMIT 10;
 SELECT * FROM RAW_REVIEWS LIMIT 10;
+```
 
+</details>
+
+### Exercise 7: Answer Questions with SQL
+
+Answer the following questions by writing SQL queries:
+
+1. Which room types are available and how many records does each type have?
+2. What is the minimum and maximum value of the column `MINIMUM_NIGHTS`?
+3. How many records do we have with the "minimum value" of `MINIMUM_NIGHTS`?
+4. What is the minimum and maximum value of `PRICE`?
+5. How many positive, negative and neutral reviews are there?
+6. What percentage of the hosts is superhost?
+7. Are there any reviews for non-existent listings?
+
+<details>
+<summary>Solution</summary>
+
+```sql
+-- 1. Room types and counts
 SELECT ROOM_TYPE, COUNT(*) as NUM_RECORDS FROM RAW_LISTINGS GROUP BY ROOM_TYPE ORDER BY ROOM_TYPE;
 
+-- 2. Min and max MINIMUM_NIGHTS
 SELECT MIN(MINIMUM_NIGHTS), MAX(MINIMUM_NIGHTS) FROM RAW_LISTINGS;
+
+-- 3. Records with minimum value of MINIMUM_NIGHTS
 SELECT COUNT(*) FROM RAW_LISTINGS WHERE MINIMUM_NIGHTS = 0;
 
+-- 4. Min and max PRICE
 SELECT MIN(PRICE), MAX(PRICE) FROM RAW_LISTINGS;
 
+-- 5. Review sentiment counts
 SELECT sentiment, COUNT(*) as NUM_RECORDS FROM RAW_REVIEWS WHERE sentiment IS NOT NULL GROUP BY sentiment;
 
+-- 6. Superhost percentage
 SELECT SUM(CASE WHEN IS_SUPERHOST='t' THEN 1 ELSE 0 END)/SUM(1)* 100 as SUPERHOST_PERCENT FROM RAW_HOSTS;
 
+-- 7. Reviews for non-existent listings
 SELECT r.* FROM RAW_REVIEWS r LEFT JOIN RAW_LISTINGS l ON (r.listing_id = l.id) WHERE l.id IS NULL;
 ```
+
+</details>
 
 ---
 
